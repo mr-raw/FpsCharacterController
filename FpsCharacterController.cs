@@ -28,7 +28,6 @@ public class FpsCharacterController : MonoBehaviour
     private CharacterController _charController;
     private bool _isJumping;
     private bool _isSprinting;
-    private float _movementSpeed;
     
     private void Start()
     {
@@ -44,7 +43,6 @@ public class FpsCharacterController : MonoBehaviour
         // TODO: The camera should be a child to the Player component. Add check for this here.
         if (_playerCamera == null)
         {
-            Debug.Log("Main Camera not assigned manually. Trying to find the camera automatically.");
             _playerCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
             if (_playerCamera == null)
             {
@@ -89,12 +87,11 @@ public class FpsCharacterController : MonoBehaviour
         var horizInput = Input.GetAxis(horizontalInputName);
         
         var direction = new Vector3(horizInput, 0, vertInput);
-        var velocity = direction * _movementSpeed;
+        var movementSpeed = Mathf.Lerp(walkSpeed, Input.GetKey(sprintKey) ? runSpeed : walkSpeed,Time.deltaTime * runBuildUpSpeed);
+        var velocity = direction * movementSpeed;
         velocity = transform.TransformDirection(velocity);
-        _charController.Move(velocity * Time.deltaTime);
-       
-        _movementSpeed = Mathf.Lerp(_movementSpeed, Input.GetKey(sprintKey) ? runSpeed : walkSpeed, Time.deltaTime * runBuildUpSpeed);
-        // JumpInput();
+        
+        _charController.Move(velocity * Time.deltaTime); // Move. Velocity = direction * speed
     }
 
     void JumpInput()
@@ -131,8 +128,5 @@ public class FpsCharacterController : MonoBehaviour
 
 /* CHANGELOG
  24.07.19: Removed the OnSlope method all together. Have to implement it at a later time. Jumping is also not working.
- 
-
-
-
+ I have to double check if the sprinting is actually working. 
 */
